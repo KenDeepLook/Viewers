@@ -20,6 +20,10 @@ const dicomsr = {
 /**
  * Define a default modeConfig that can be extended independently by inheritting
  * from this using the configBase: "modeConfig" to get the defaults here.
+ * It isn't required to use this to get the defaults, but is simply provided
+ * as a convenient extension point.
+ * Extensions may enhance the default modeConfig by defining getSopClassHandler
+ * and other related fields.
  */
 const { modeConfig } = ConfigPoint.register({
   modeConfig: {
@@ -27,17 +31,28 @@ const { modeConfig } = ConfigPoint.register({
       leftPanels: [tracked.thumbnailList],
       rightPanels: [tracked.measurements],
       viewports: [
+        // The images id names this object so that later
+        // customizations to namespace/displaySetsToDisplay can simply
+        // refer to it by name and then set specific values, eg:
+        // viewports: { images: {namespace: myNewNamespace
         {
           id: 'images',
           namespace: tracked.viewport,
           displaySetsToDisplay: [ohif.sopClassHandler],
         },
         {
+          id: 'dicomsr',
           namespace: dicomsr.viewport,
           displaySetsToDisplay: [dicomsr.sopClassHandler],
         },
       ],
     },
+    // sopClassHandlers is a list of string values, where the ordering is
+    // important to determine which handler will actually read a given instance.
+    // Thus, this defines a sort operation, with a value reference.
+    // Elements in the config point are objects with id and priority, and are
+    // used to sort by priority, and then id field is extracted and placed in a list.
+    // See extension-video for details on how to add a new item.
     sopClassHandlers: {
       configOperation: 'sort',
       sortKey: 'priority',
