@@ -163,7 +163,7 @@ function modeFactory() {
         cornerstoneViewportService,
       } = servicesManager.services;
 
-      //commandsManager.runCommand('closeDeepLookURL', {});
+      commandsManager.runCommand('resetDeepLook', {});
       _activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
       _activatePanelTriggersSubscriptions = [];
 
