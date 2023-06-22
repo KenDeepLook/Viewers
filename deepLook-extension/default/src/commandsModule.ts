@@ -1,6 +1,6 @@
 import { Types as OhifTypes } from '@ohif/core';
 import deepLookIntegration from './helpers/deepLookIntegration';
-import { metaData, cache, StackViewport } from '@cornerstonejs/core';
+import { Enums as cs3DEnums, eventTarget } from '@cornerstonejs/core';
 import deepLookMouseBindings from './mouseBindings';
 import { vec3 } from 'gl-matrix';
 import openURL from './helpers/openURL';
@@ -21,7 +21,56 @@ const commandsModule = ({
   } = servicesManager.services;
   let lastToolNameDisabled;
   let nTries = numberOfTries;
+  let urlCallTries = 0;
   let heartBeatPulseId;
+  let lastElementTracked;
+  let canSendResetCommand = false;
+
+  /**
+   * This function resets DLPrecise whenever a camera is modified
+   * @param evt
+   */
+  function onCameraModified(evt) {
+    sendResetCommand();
+  }
+
+  /**
+   * This function removes the camera modified listener function.
+   */
+  function removeCameraModifiedListener(): void {
+    if (lastElementTracked) {
+      lastElementTracked.removeEventListener(
+        cs3DEnums.Events.CAMERA_MODIFIED,
+        onCameraModified
+      );
+      lastElementTracked = undefined;
+    }
+  }
+
+  /**
+   * This function adds a camera modified listener callback function to the
+   * event CAMERA_MODIFIED to element object that represents the active viewport
+   */
+  function addCameraModifiedListener() {
+    if (lastElementTracked) {
+      lastElementTracked.addEventListener(
+        cs3DEnums.Events.CAMERA_MODIFIED,
+        onCameraModified
+      );
+    }
+  }
+
+  /**
+   * This function add a listener whenever a viewport changes its data
+   * @param parameters
+   */
+  function onChangeViewportData(parameters): void {
+    if (lastElementTracked !== parameters.detail.element) {
+      removeCameraModifiedListener();
+      lastElementTracked = parameters.detail.element;
+    }
+    addCameraModifiedListener();
+  }
 
   /**
    * This function presents a notification message related to DeepLook integration
@@ -74,17 +123,6 @@ const commandsModule = ({
   }
 
   /**
-   * This function just call an url without error callback function. Could be
-   * deleted in next versions of this software
-   * @param deepLookURL url to be opened
-   */
-  function callLink(deepLookURL) {
-    const link = document.createElement('a');
-    link.href = deepLookURL;
-    link.click();
-  }
-
-  /**
    * This function calls a custom URL protocol link that if correctly installed, it will
    * start DLPrecise. To open this link, it uses the openURL function that receives to parameters:
    *  - the url protocol to be opened
@@ -93,11 +131,11 @@ const commandsModule = ({
    */
   function callDeepLookURL() {
     if (!deepLookIntegrationObject.isConnected()) {
-      openURL('deeplook://open', () => {
-        if (!deepLookIntegrationObject.isConnected()) {
-          window.open('/installer.html', '_blank');
-        }
-      });
+      window.open('deeplook://open');
+      urlCallTries += 1;
+      if (urlCallTries > 1) {
+        window.open('/installer.html', '_blank');
+      }
     }
   }
 
@@ -141,6 +179,9 @@ const commandsModule = ({
    * @returns
    */
   function openCallback() {
+    // reset url call tries if connected to DLPrecise
+    urlCallTries = 0;
+    nTries = 0;
     return;
   }
 
@@ -193,6 +234,21 @@ const commandsModule = ({
   }
 
   /**
+   * Callback function called when mass view is activated
+   */
+  function massViewOnCallBack() {
+    activateMouseBindings();
+  }
+
+  /**
+   * Callback function called when mass view is deactivated
+   */
+  function massViewOffCallBack() {
+    canSendResetCommand = true;
+    deactivateMouseBindings();
+  }
+
+  /**
    * This function reactivates the mouse bindings after DLPrecise releases control
    * @returns
    */
@@ -218,10 +274,20 @@ const commandsModule = ({
     return;
   }
 
+  /**
+   * This function sends a reset command to DLPrecise. The variable canSendResetCommand
+   * prevents OHIF from sending various reset commands every time zoom is modified
+   */
+  function sendResetCommand() {
+    if (canSendResetCommand) {
+      deepLookIntegrationObject.resetDLPrecise();
+      canSendResetCommand = false;
+    }
+  }
   const deepLookIntegrationObject = new deepLookIntegration(
     getPixelMM,
-    activateMouseBindings,
-    deactivateMouseBindings,
+    massViewOnCallBack,
+    massViewOffCallBack,
     messageStatus,
     openCallback,
     errorCallback,
@@ -233,10 +299,10 @@ const commandsModule = ({
       return deepLookIntegrationObject.isConnected();
     },
     closeDeepLookURL() {
-      callLink('deeplook://close');
+      window.open('deeplook://close');
     },
     resetDeepLook() {
-      deepLookIntegrationObject.resetDLPrecise();
+      sendResetCommand();
     },
   };
 
@@ -258,6 +324,12 @@ const commandsModule = ({
     deepLookIntegrationObject.closeDLPrecise();
     clearInterval(heartBeatPulseId);
   });
+
+  eventTarget.addEventListener(
+    cs3DEnums.Events.STACK_VIEWPORT_NEW_STACK,
+    onChangeViewportData
+  );
+
   checkConnection();
   sendHeatBeatPulse();
   return { actions, defaultContext, definitions };
