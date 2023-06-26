@@ -3,7 +3,6 @@ const resetCommand = 3; // turns off massView and clears any overlays,  used whe
 const closeCommand = 4; // causes dlPrecise to exit and stop running
 const heartBeatCommand = 5; // keeps dlPrecise from “exiting and stop running” because of non-use.
 
-var localDeepLookIntegration 
 class deepLookIntegration {
   serverIp;
   constructor(
@@ -28,9 +27,6 @@ class deepLookIntegration {
     this.errorCallback = errorCallback;
     this.closeCallback = closeCallback;
     this.webSocket = undefined;
-    this.downloadScreen = null;
-    localDeepLookIntegration = this;
-    this.didPutUpScreen = false;
   }
 
   /**
@@ -141,54 +137,6 @@ class deepLookIntegration {
     this.connectionStatus(isInfoMessage, message);
   }
 
-/* clear down load screen
-*/
-    clearDownLoadScreen()
-{
-    if(localDeepLookIntegration.downloadScreen == null)
-    {
-    return;
-    }
-    
-   let element = document.getElementById("downloadClick");
-   
-   element.removeEventListener("click", localDeepLookIntegration.clearDownLoadScreen);
-   
-    document.body.removeChild(localDeepLookIntegration.downloadScreen);
-    localDeepLookIntegration.downloadScreen = null;
-}
-
-  /** put up down load screen
-  */
-     //this.screenDropDown[screenAllOff].src = 'screenDropDownAllOffTrans.svg';
-     putUpDownloadScreen()
-     {
-     if((this.downloadScreen != null) || (this.didPutUpScreen == true))
-     {
-     return;
-     }
-     this.didPutUpScreen = true;
-     
-   	this.downloadScreen = document.createElement("div");
-         let windowWidth = window.innerWidth; 
-         let downloadWidth = 600;
-         let xPosOffset = (windowWidth - downloadWidth)/2;
-
-         this.downloadScreen.style = "position: absolute; left: " + xPosOffset + "px; top: 100px; width: " + downloadWidth + "px; height: 290px;z-index: 1000;background-color: #ffffff";
-
-        this.downloadScreen.innerHTML =  '<div style="border: 2px dark blue;"><center><div style= "padding: 12px;"><img src="DLM Logo - Color.webp" alt="DeepLook Logo" class="logo"><h1>DL Precise OHIF activation (1.b)</h1>'
-   + '<BR><p>Please click on the DLPrecise activation link below to download<br>and run the DLPrecise OHIF activation'
-   + ' application. This application<br>will activate DLPrecise for OHIF on this machine.</p>'+
-    '<BR><a id="downloadClick" href="https://client-deeplook.s3.amazonaws.com/downloads/activateDLPreciseOHIF-1.b.exe" download ' 
-    + 'style= "font-size: 1.2em;padding: 10px 20px;background-color: #007BFF;color: white;text-decoration: none;border-radius: 5px;margin-top: 20px;animation: pulse 2s infinite;" >Download DL Precise OHIF activation software</a></div></center></div>';
-
-	document.body.appendChild(this.downloadScreen);
-   
-  	let element = document.getElementById("downloadClick");
-   
-        element.addEventListener("click", this.clearDownLoadScreen);
-      }
-  
   /**
    * This function connects to DLPrecise local websocket server and adds all necessary listeners
    * @returns
@@ -199,21 +147,10 @@ class deepLookIntegration {
     }
     this.webSocket = new WebSocket('ws://' + this.serverIp + ':44458');
     if (!this.webSocket) {
-        if(this.downloadScreen == null)
-    {
-    	this.putUpDownloadScreen();
-    }
-    
       this.connectionStatus(false, 'Could not open a connection to DeepLook');
       return;
     }
     this.webSocket.addEventListener('error', event => {
-    
-    if(this.downloadScreen == null)
-    {
-    	this.putUpDownloadScreen();
-    }
-    
       this.processLog(
         false,
         'DeepLook connection could not be established properly'
@@ -222,14 +159,8 @@ class deepLookIntegration {
         this.errorCallback();
       }
     });
-    
 
     this.webSocket.addEventListener('open', event => {
-    
-    if(localDeepLookIntegration.downloadScreen != null)
-    {
-    	localDeepLookIntegration.clearDownLoadScreen();
-    }
       this.processLog(true, 'DeepLook connection established successfully');
       this.connectionOpened = true;
       if (this.openCallback) {

@@ -7,7 +7,6 @@ import openURL from './helpers/openURL';
 
 const defaultContext = 'CORNERSTONE';
 const numberOfTries = 3;
-
 const commandsModule = ({
   servicesManager,
   commandsManager,
@@ -132,36 +131,14 @@ const commandsModule = ({
    */
   function callDeepLookURL() {
     if (!deepLookIntegrationObject.isConnected()) {
-      window.open('deeplook01a://open');
-  //    urlCallTries += 1;
-   //   if (urlCallTries > 1) {
-   //     window.open('/installer.html', '_blank');
-     // }
+      window.open('deeplook://open');
+      urlCallTries += 1;
+      if (urlCallTries > 1) {
+        window.open('/installer.html', '_blank');
+      }
     }
   }
 
-
-function gotError()
-{
-  console.log("no DeepLookProtocol");
-}
-
-function gotLoad()
-{
-console.log("got load");
-}
-  /**
-   * test to see if the deeplook protocol works.
-   */
-  function testDeepLookProtocol()
- {
-    deepLookIntegrationObject.closeDLPrecise();
-    deepLookIntegrationObject.closeWebSocket();
-    openURL('deeplook01a://open', gotError, gotLoad, gotError);
-    
-  checkConnection();
-  sendHeatBeatPulse()
-  }
   // This pair of functions monitors, from time to time, the connection with DLPrecise
   // If down, after a predefined number of tries, it tries to reestablish the connection by
   // starting DLPrecise with a custom URL protocol scheme described
@@ -180,18 +157,22 @@ console.log("got load");
    * This function checks if the connection is established. If not try to connect. After
    * enough tries (3 default), if call the function callDeepLookURL to start DLPrecise
    */
-  function _checkConnection()
-   {
-    if (!deepLookIntegrationObject.isConnected()) 
-     {
-       deepLookIntegrationObject.openWebSocket();
-      // callDeepLookURL();
-
-       setTimeout(() => {
-         checkConnection();
-         }, 3000);
+  function _checkConnection() {
+    if (!deepLookIntegrationObject.isConnected()) {
+      deepLookIntegrationObject.openWebSocket();
+      if (nTries === 0) {
+        callDeepLookURL();
+        nTries = numberOfTries;
+      } else {
+        nTries -= 1;
       }
+    } else {
+      nTries = numberOfTries;
     }
+    setTimeout(() => {
+      checkConnection();
+    }, 3000);
+  }
 
   /**
    * This callback function is called when a connection is established with DLPrecise
@@ -318,7 +299,7 @@ console.log("got load");
       return deepLookIntegrationObject.isConnected();
     },
     closeDeepLookURL() {
-      window.open('deeplook01a://close');
+      window.open('deeplook://close');
     },
     resetDeepLook() {
       sendResetCommand();
@@ -350,8 +331,8 @@ console.log("got load");
   );
 
 console.log("try to open DLPrecise here");
-testDeepLookProtocol();
-
+  //checkConnection();
+  //sendHeatBeatPulse();
   return { actions, defaultContext, definitions };
 };
 

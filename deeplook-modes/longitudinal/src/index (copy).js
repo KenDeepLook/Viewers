@@ -70,7 +70,7 @@ function modeFactory() {
     // We should not be.
     id,
     routeName: 'viewer',
-    displayName: 'DLPrecise Viewer 1.a',
+    displayName: 'Basic Viewer',
     /**
      * Lifecycle hooks
      */

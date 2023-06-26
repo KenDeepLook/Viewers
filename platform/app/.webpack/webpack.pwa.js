@@ -54,7 +54,7 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-      devtoolModuleFilenameTemplate: function (info) {
+      devtoolModuleFilenameTemplate: function(info) {
         if (isProdBuild) {
           return `webpack:///${info.resourcePath}`;
         } else {
@@ -89,6 +89,12 @@ module.exports = (env, argv) => {
         path.resolve(__dirname, 'deepLook-modes/longitudinal/node_modules'),
         path.resolve(__dirname, 'deepLook-extension\\default\\node_modules'),
         path.resolve(__dirname, 'deeplook-modes\\longitudinal\\node_modules'),
+        path.resolve(__dirname, 'deepLook-extension/default/node_modules'),
+        path.resolve(__dirname, 'deeplook-modes/longitudinal/node_modules'),
+        path.resolve(__dirname, 'deeplook-modes/longitudinal/node_modules'),
+        path.resolve(__dirname, 'deepLook-extension/default/node_modules'),
+        path.resolve(__dirname, 'deepLook-extension/default/node_modules'),
+        path.resolve(__dirname, 'deeplook-modes/longitudinal/node_modules'),
       ],
     },
     plugins: [
