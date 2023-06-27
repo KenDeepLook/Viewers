@@ -28,7 +28,7 @@ const commandsModule = ({
   let canSendResetCommand = false;
 
   /**
-   * This function resets DLPrecise whenever a camera is modified
+   * This   function resets DLPrecise whenever a camera is modified
    * @param evt
    */
   function onCameraModified(evt) {

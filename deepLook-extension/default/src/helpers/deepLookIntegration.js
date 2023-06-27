@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-const resetCommand = 3; // turns off massView and clears any overlays,  used when DICOM image size is magnified or un-magnified, changed, moved, or current display is left.
+const resetCommand = 3; // turns off massView and clears any overlays,  used when DICOM   image size is magnified or un-magnified, changed, moved, or current display is left.
 const closeCommand = 4; // causes dlPrecise to exit and stop running
 const heartBeatCommand = 5; // keeps dlPrecise from “exiting and stop running” because of non-use.
 
