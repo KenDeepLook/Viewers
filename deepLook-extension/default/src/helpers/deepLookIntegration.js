@@ -3,7 +3,7 @@ const resetCommand = 3; // turns off massView and clears any overlays,  used whe
 const closeCommand = 4; // causes dlPrecise to exit and stop running
 const heartBeatCommand = 5; // keeps dlPrecise from “exiting and stop running” because of non-use.
 
-var localDeepLookIntegration 
+var localDeepLookIntegration; 
 class deepLookIntegration {
   serverIp;
   constructor(
@@ -102,10 +102,10 @@ class deepLookIntegration {
    * Send to DLPrecise a command to reset overlays
    */
   resetDLPrecise() {
-    if (this.isConnected()) {
+    if (localDeepLookIntegration.isConnected()) {
       const params = new Uint32Array(1);
       params[0] = resetCommand;
-      this.webSocket.send(params);
+      localDeepLookIntegration.webSocket.send(params);
     }
   }
 
@@ -230,6 +230,9 @@ class deepLookIntegration {
     {
     	localDeepLookIntegration.clearDownLoadScreen();
     }
+    
+    window.addEventListener("blur",localDeepLookIntegration.resetDLPrecise);
+    
       this.processLog(true, 'DeepLook connection established successfully');
       this.connectionOpened = true;
       if (this.openCallback) {

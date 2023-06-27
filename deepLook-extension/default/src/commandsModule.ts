@@ -103,7 +103,7 @@ const commandsModule = ({
   }
 
   /**
-   * This function calculates the pixel to millimeter ratio. It uses the canvasToWorld
+   * This  function calculates the pixel to millimeter ratio. It uses the canvasToWorld
    * function to calculate the distance in millimeters of 100 pixels and uses this value
    * to calculate the ratio
    * @param xPos
