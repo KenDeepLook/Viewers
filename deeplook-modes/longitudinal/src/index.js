@@ -20,7 +20,7 @@ const tracked = {
     '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
   viewport:
-    '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
+    '@flexview/flexview-extension.viewportModule.flexview',
 };
 
 const dicomsr = {
@@ -195,7 +195,7 @@ function modeFactory() {
         },*/
         layoutTemplate: () => {
           return {
-            id: ohif.layout,
+            id: '@flexview/flexview-extension.layoutTemplateModule.viewerLayout',
             props: {
               leftPanels: [tracked.thumbnailList],
               rightPanels: [dicomSeg.panel, tracked.measurements],

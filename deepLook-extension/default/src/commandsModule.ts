@@ -159,9 +159,13 @@ console.log("got load");
  {
     deepLookIntegrationObject.closeDLPrecise();
     deepLookIntegrationObject.closeWebSocket();
-    window.open('deeplook01a://open');//, gotError, gotLoad, gotError);
-  checkConnection();
-  sendHeatBeatPulse()
+    if(window.parent && window !== window.parent) {
+      window?.parent?.postMessage({ msg: 'flexViewOpenViewerInTab' }, '*');
+    } else {
+      openURL('deeplook01a://open', gotError, gotLoad, gotError);
+    }
+    checkConnection();
+    sendHeatBeatPulse()
   }
   // This pair of functions monitors, from time to time, the connection with DLPrecise
   // If down, after a predefined number of tries, it tries to reestablish the connection by
