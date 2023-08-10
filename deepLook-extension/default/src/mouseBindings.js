@@ -1,4 +1,4 @@
-import { Enums } from '@cornerstonejs/tools';
+const { Enums } = window.sharedLibraries['@cornerstonejs/tools']
 
 export default function deepLookMouseBindings(toolName) {
   if (toolName === 'WindowLevel') {

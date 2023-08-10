@@ -1,4 +1,16 @@
-import { deepLookMouseBindings } from '@deeplook/extension-default';
+const { Enums } = window.sharedLibraries['@cornerstonejs/tools']
+
+function deepLookMouseBindings(toolName) {
+  if (toolName === 'WindowLevel') {
+    return Enums.MouseBindings.Auxiliary;
+  } else if (toolName === 'Pan') {
+    return Enums.MouseBindings.Secondary;
+  } else if (toolName === 'Zoom') {
+    return Enums.MouseBindings.Primary;
+  }
+  return undefined;
+}
+
 function initDefaultToolGroup(
   extensionManager,
   toolGroupService,

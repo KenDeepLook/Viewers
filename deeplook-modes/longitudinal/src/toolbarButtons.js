@@ -1,11 +1,11 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
-import {
+const {
   // ExpandableToolbarButton,
   // ListMenu,
   WindowLevelMenuItem,
-} from '@ohif/ui';
-import { defaults } from '@ohif/core';
+} = window.sharedLibraries['@ohif/ui'];
+const { defaults } = window.sharedLibraries['@ohif/core'];
 
 const { windowLevelPresets } = defaults;
 /**

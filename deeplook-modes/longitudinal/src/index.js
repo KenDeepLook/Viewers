@@ -1,7 +1,9 @@
-import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
 import initToolGroups from './initToolGroups.js';
+import RuntimeExtension from 'flexview-runtime-extension';
+
+const { hotkeys } = window.sharedLibraries['@ohif/core'];
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -18,7 +20,7 @@ const tracked = {
     '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
   viewport:
-    '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
+    '@flexview/flexview-extension.viewportModule.flexview',
 };
 
 const dicomsr = {
@@ -193,7 +195,7 @@ function modeFactory() {
         },*/
         layoutTemplate: () => {
           return {
-            id: ohif.layout,
+            id: '@flexview/flexview-extension.layoutTemplateModule.viewerLayout',
             props: {
               leftPanels: [tracked.thumbnailList],
               rightPanels: [dicomSeg.panel, tracked.measurements],
@@ -255,4 +257,17 @@ const mode = {
 };
 
 export default mode;
+/*
+const runtimeExtension = new RuntimeExtension(mode, [
+    {
+    modeId: 'flexview-runtime-extension-tmtv',
+    routePath: 'tmtv-mateus',
+    leftPanels: [],
+    rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
+    viewports: [],
+    hangingProtocolOverride: tmtv.hangingProtocol,
+  },
+]);
+export default runtimeExtension;
+*/
 export { initToolGroups, toolbarButtons };

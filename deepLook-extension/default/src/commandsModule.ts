@@ -1,9 +1,11 @@
-import { Types as OhifTypes } from '@ohif/core';
-import deepLookIntegration from './helpers/deepLookIntegration';
-import { Enums as cs3DEnums, eventTarget } from '@cornerstonejs/core';
 import deepLookMouseBindings from './mouseBindings';
-import { vec3 } from 'gl-matrix';
 import openURL from './helpers/openURL';
+import deepLookIntegration from './helpers/deepLookIntegration';
+
+const { vec3 } = window.sharedLibraries['gl-matrix'];
+const { Types } = window.sharedLibraries['@ohif/core'];
+const { Enums, eventTarget } = window.sharedLibraries['@cornerstonejs/core'];
+
 
 const defaultContext = 'CORNERSTONE';
 const numberOfTries = 3;
@@ -13,7 +15,7 @@ const commandsModule = ({
   commandsManager,
   extensionManager,
   appConfig,
-}: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule => {
+}: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
   const {
     viewportGridService,
     toolGroupService,
@@ -41,7 +43,7 @@ const commandsModule = ({
   function removeCameraModifiedListener(): void {
     if (lastElementTracked) {
       lastElementTracked.removeEventListener(
-        cs3DEnums.Events.CAMERA_MODIFIED,
+        Enums.Events.CAMERA_MODIFIED,
         onCameraModified
       );
       lastElementTracked = undefined;
@@ -55,7 +57,7 @@ const commandsModule = ({
   function addCameraModifiedListener() {
     if (lastElementTracked) {
       lastElementTracked.addEventListener(
-        cs3DEnums.Events.CAMERA_MODIFIED,
+        Enums.Events.CAMERA_MODIFIED,
         onCameraModified
       );
     }
@@ -157,10 +159,13 @@ console.log("got load");
  {
     deepLookIntegrationObject.closeDLPrecise();
     deepLookIntegrationObject.closeWebSocket();
-    openURL('deeplook01a://open', gotError, gotLoad, gotError);
-    
-  checkConnection();
-  sendHeatBeatPulse()
+    if(window.parent && window !== window.parent) {
+      window?.parent?.postMessage({ msg: 'flexViewOpenViewerInTab' }, '*');
+    } else {
+      openURL('deeplook01a://open', gotError, gotLoad, gotError);
+    }
+    checkConnection();
+    sendHeatBeatPulse()
   }
   // This pair of functions monitors, from time to time, the connection with DLPrecise
   // If down, after a predefined number of tries, it tries to reestablish the connection by
@@ -345,7 +350,7 @@ console.log("got load");
   });
 
   eventTarget.addEventListener(
-    cs3DEnums.Events.STACK_VIEWPORT_NEW_STACK,
+    Enums.Events.STACK_VIEWPORT_NEW_STACK,
     onChangeViewportData
   );
 

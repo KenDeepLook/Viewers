@@ -1,6 +1,7 @@
-import { addTool } from '@cornerstonejs/tools';
 import DeepLookTool from '../tools/deepLookTool';
 import ConfigPoint, { loadSearchConfigPoint } from 'config-point';
+
+const { addTool } = window.sharedLibraries['@cornerstonejs/tools'];
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
 const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
